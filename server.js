@@ -1,7 +1,8 @@
 //INITIALIZING EXPRESS
 const express = require("express");
 const connectDB = require("./src/config/db");
-const authRoutes = require("./src/controller/authController");
+const authRoutes = require("./src/routes/authroute");
+const taskRoutes = require("./src/routes/taskRoute");
 
 //CREATING AN EXPRESS SERVER
 const app = express();
@@ -11,6 +12,7 @@ connectDB();
 //MIDDLEWARES
 app.use(express.json());
 app.use("/api/auth", authRoutes);
+app.use("/api/task", taskRoutes);
 
 //routes
 app.get("/", (req, res) => {

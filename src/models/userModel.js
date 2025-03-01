@@ -6,7 +6,6 @@ const userSchema = new mongoose.Schema(
     name: {
       type: String,
       required: [true, "User must have a name"],
-      unique: true,
       trim: true, // Helps remove extra spaces
     },
     email: {

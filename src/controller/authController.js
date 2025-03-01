@@ -8,7 +8,7 @@ exports.registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
     //check for existing user
-    const existingUser = await User.findone({ email });
+    const existingUser = await User.findOne({ email });
     if (existingUser)
       return res.status(400).json({ message: "User already exists" });
 
@@ -29,14 +29,14 @@ exports.loginUser = async (req, res) => {
     const { name, email, password } = req.body;
 
     //find user by email and drag password in
-    const user = User.findone({ email }).select("+password");
+    const user = await User.findOne({ email }).select("+password");
     if (!user)
       return res
         .status(400)
-        .json({ message: "invalid credentials", error: "error.message" });
+        .json({ message: "invalid credentials", error: error.message });
 
     //check password match
-    const passwordMatch = bcrypt.compare(password, user.password);
+    const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch)
       return res
         .status(400)

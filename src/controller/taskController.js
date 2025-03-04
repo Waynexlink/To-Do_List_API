@@ -31,14 +31,57 @@ exports.getTasks = async (req, res) => {
 
     const task = await query;
 
-    if (tasks.length === 0) {
+    if (task.length === 0) {
       return res.status(200).json({ message: "No tasks found", tasks: [] });
     }
 
-    res.status(200).json({ success: true, tasks });
+    res.status(200).json({ success: true, task });
   } catch (error) {
     res.status(500).json({
       message: "server error",
+      error: error.message,
+    });
+  }
+};
+exports.updateTask = async (req, res) => {
+  try {
+    const task = await Task.findOne({ id: req.params.id, user: req.user._id });
+
+    if (!task) {
+      return res.status(404).json({
+        message: "task not found or unauthorized",
+      });
+    }
+    Object.assign(task, req.body);
+    await task.save();
+
+    res
+      .status(200)
+      .json({ success: true, message: "task successfully updated" });
+  } catch (error) {
+    res.status(500).json({
+      message: "server error",
+      error: error.message,
+    });
+  }
+};
+exports.deleteTask = async (req, res) => {
+  try {
+    const task = await Task.findByIdAndDelete({
+      _id: req.params.id,
+      user: req.user._id,
+    });
+
+    if (!task) {
+      return res.status(404).json({
+        message: "task not found or unauthorized",
+        error: error.message,
+      });
+    }
+    res.status(204).json({ success: true, task });
+  } catch (error) {
+    res.status(404).json({
+      message: "fail to delete",
       error: error.message,
     });
   }

@@ -26,7 +26,7 @@ exports.getTasks = async (req, res) => {
     let query = Task.find({ user: req.user._id });
 
     if (req.query.status) {
-      return (query = query.find({ status: req.query.status }));
+      query = query.find({ status: req.query.status });
     }
 
     const task = await query;
@@ -45,14 +45,14 @@ exports.getTasks = async (req, res) => {
 };
 exports.updateTask = async (req, res) => {
   try {
-    const task = await Task.findOne({ id: req.params.id, user: req.user._id });
+    const task = await Task.findOne({ _id: req.params.id, user: req.user._id });
 
     if (!task) {
       return res.status(404).json({
         message: "task not found or unauthorized",
       });
     }
-    Object.assign(task, req.body);
+    Object.assign(task, req.body, { new: true, runValidators: true });
     await task.save();
 
     res
@@ -67,7 +67,7 @@ exports.updateTask = async (req, res) => {
 };
 exports.deleteTask = async (req, res) => {
   try {
-    const task = await Task.findByIdAndDelete({
+    const task = await Task.findOne({
       _id: req.params.id,
       user: req.user._id,
     });
@@ -78,7 +78,11 @@ exports.deleteTask = async (req, res) => {
         error: error.message,
       });
     }
-    res.status(204).json({ success: true, task });
+
+    await task.deleteOne();
+    res
+      .status(200)
+      .json({ success: true, message: "task successfully deleted  " });
   } catch (error) {
     res.status(404).json({
       message: "fail to delete",

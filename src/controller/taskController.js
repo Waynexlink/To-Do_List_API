@@ -11,10 +11,13 @@ exports.createTask = async (req, res) => {
       user: req.user._id,
     });
 
-    res.status(201).json({ message: "Task created successfully", task });
+    res
+      .status(201)
+      .json({ success: true, message: "Task created successfully", task });
   } catch (error) {
     res.status(500).json({
-      message: "server error",
+      success: false,
+      message: "Internal server error",
       error: error.message,
     });
   }
@@ -32,14 +35,20 @@ exports.getTasks = async (req, res) => {
     const task = await query;
 
     if (task.length === 0) {
-      return res.status(200).json({ message: "No tasks found", tasks: [] });
+      return res
+        .status(200)
+        .json({ success: true, message: "No tasks found", data: [] });
     }
 
-    res.status(200).json({ success: true, task });
+    res.status(200).json({
+      success: true,
+      message: "Task successfully recieved",
+      data: task,
+    });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "server error",
-      error: error.message,
     });
   }
 };
@@ -49,6 +58,7 @@ exports.updateTask = async (req, res) => {
 
     if (!task) {
       return res.status(404).json({
+        success: false,
         message: "task not found or unauthorized",
       });
     }
@@ -60,8 +70,8 @@ exports.updateTask = async (req, res) => {
       .json({ success: true, message: "task successfully updated" });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "server error",
-      error: error.message,
     });
   }
 };
@@ -74,6 +84,7 @@ exports.deleteTask = async (req, res) => {
 
     if (!task) {
       return res.status(404).json({
+        success: false,
         message: "task not found or unauthorized",
         error: error.message,
       });
@@ -84,8 +95,9 @@ exports.deleteTask = async (req, res) => {
       .status(200)
       .json({ success: true, message: "task successfully deleted  " });
   } catch (error) {
-    res.status(404).json({
-      message: "fail to delete",
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
       error: error.message,
     });
   }

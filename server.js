@@ -1,5 +1,6 @@
 //INITIALIZING EXPRESS
 const express = require("express");
+const cors = require("cors");
 const connectDB = require("./src/config/db");
 const authRoutes = require("./src/routes/authroute");
 const taskRoutes = require("./src/routes/taskRoute");
@@ -11,6 +12,7 @@ const app = express();
 connectDB();
 //MIDDLEWARES
 app.use(express.json());
+app.use(cors());
 app.use("/api/auth", authRoutes);
 app.use("/api/task", taskRoutes);
 
